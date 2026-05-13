@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/record/record",
+    "pages/history/history",
+    "pages/backup/backup"
+  ],
+  "window": {
+    "navigationBarTitleText": "交易复盘",
+    "navigationBarBackgroundColor": "#f7f8f3",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f8f3"
+  },
+  "tabBar": {
+    "position": "top",
+    "color": "#8b9087",
+    "selectedColor": "#1f3a33",
+    "backgroundColor": "#fbfcf8",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "概览"
+      },
+      {
+        "pagePath": "pages/record/record",
+        "text": "记录"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "text": "历史"
+      },
+      {
+        "pagePath": "pages/backup/backup",
+        "text": "备份"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

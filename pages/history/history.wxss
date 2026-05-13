@@ -1,0 +1,107 @@
+.filter {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10rpx;
+  padding: 8rpx;
+  background: #e9eee3;
+  border-radius: 12rpx;
+}
+
+.filter-item {
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #697268;
+  border-radius: 8rpx;
+}
+
+.filter-item.active {
+  background: #ffffff;
+  color: #1f3a33;
+  font-weight: 650;
+}
+
+.empty-panel {
+  margin-top: 28rpx;
+  min-height: 280rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b9087;
+  background: #ffffff;
+  border: 1rpx solid #e6e9de;
+  border-radius: 12rpx;
+}
+
+.record-card {
+  margin-top: 20rpx;
+  padding: 26rpx;
+  background: #ffffff;
+  border: 1rpx solid #e6e9de;
+  border-radius: 12rpx;
+}
+
+.record-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.symbol {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 650;
+  margin-bottom: 8rpx;
+}
+
+.date,
+.record-line {
+  color: #697268;
+  font-size: 24rpx;
+}
+
+.badge {
+  flex: none;
+  min-width: 160rpx;
+  padding: 12rpx 16rpx;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 24rpx;
+}
+
+.badge.mistake {
+  color: #b44a3b;
+  background: #fff0ec;
+}
+
+.badge.correct {
+  color: #26724f;
+  background: #edf6ef;
+}
+
+.record-line {
+  margin-top: 18rpx;
+}
+
+.note {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  color: #35443e;
+  line-height: 1.6;
+  background: #f7f8f3;
+  border-radius: 8rpx;
+}
+
+.delete-btn {
+  margin-top: 20rpx;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9b2f2f;
+  background: #fff7f5;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+}

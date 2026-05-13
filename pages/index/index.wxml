@@ -1,0 +1,73 @@
+<view class="page">
+  <view class="hero">
+    <view>
+      <text class="eyebrow">本月复盘</text>
+      <view class="hero-title">{{overview.month.netPercent}}%</view>
+      <text class="muted">净结果 = 正确收益 - 失误损失</text>
+    </view>
+    <button class="add-button" bindtap="goRecord">＋</button>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head">
+      <text class="panel-title">本月操作概览</text>
+      <text class="muted">{{overview.month.total}} 笔</text>
+    </view>
+    <canvas class="chart" canvas-id="monthChart" id="monthChart"></canvas>
+    <view class="legend">
+      <view class="legend-item"><text class="dot mistake"></text>误操作 {{overview.month.mistakeCount}}</view>
+      <view class="legend-item"><text class="dot correct"></text>正确操作 {{overview.month.correctCount}}</view>
+    </view>
+  </view>
+
+  <view class="metrics section">
+    <view class="metric">
+      <text class="metric-label">近 1 月损失</text>
+      <text class="metric-value loss">{{overview.month.lossPercent}}%</text>
+    </view>
+    <view class="metric">
+      <text class="metric-label">近 1 月收益</text>
+      <text class="metric-value gain">{{overview.month.gainPercent}}%</text>
+    </view>
+    <view class="metric">
+      <text class="metric-label">近半年净值</text>
+      <text class="metric-value">{{overview.halfYear.netPercent}}%</text>
+    </view>
+    <view class="metric">
+      <text class="metric-label">近一年净值</text>
+      <text class="metric-value">{{overview.year.netPercent}}%</text>
+    </view>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head">
+      <text class="panel-title">周期统计</text>
+    </view>
+    <view class="period-row" wx:for="{{periods}}" wx:key="label">
+      <text>{{item.label}}</text>
+      <view class="period-values">
+        <text class="loss">-{{item.lossPercent}}%</text>
+        <text class="gain">+{{item.gainPercent}}%</text>
+        <text>{{item.netPercent}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head">
+      <text class="panel-title">最近记录</text>
+      <text class="link" bindtap="goHistory">全部</text>
+    </view>
+    <view wx:if="{{overview.recentRecords.length === 0}}" class="empty">还没有记录，先记下一笔真实操作。</view>
+    <view class="recent-item" wx:for="{{overview.recentRecords}}" wx:key="id">
+      <view>
+        <text class="recent-title">{{item.symbol || '未填标的'}}</text>
+        <text class="recent-note">{{item.reason || item.action || '无备注'}}</text>
+      </view>
+      <view class="recent-right {{item.type}}">
+        <text>{{item.typeText}}</text>
+        <text>{{item.percent}}%</text>
+      </view>
+    </view>
+  </view>
+</view>

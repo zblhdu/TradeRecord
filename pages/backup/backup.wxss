@@ -1,0 +1,23 @@
+.backup-title {
+  color: #697268;
+  font-size: 24rpx;
+}
+
+.backup-count {
+  margin: 18rpx 0;
+  font-size: 72rpx;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.tips-title {
+  font-size: 30rpx;
+  font-weight: 650;
+  margin-bottom: 16rpx;
+}
+
+.tip {
+  color: #697268;
+  line-height: 1.7;
+  margin-top: 10rpx;
+}
