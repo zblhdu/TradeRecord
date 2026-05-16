@@ -21,7 +21,8 @@ Page({
       .map((item) => ({
         ...item,
         typeText: store.TYPE_LABELS[item.type],
-        percentText: item.type === "mistake" ? `-${item.percent}%` : `${item.percent}%`
+        percentText: item.type === "mistake" ? `-${item.lossPercent}%` : `${item.percent}%`,
+        detailText: item.type === "mistake" ? `亏损 ${item.percent}% × 仓位 ${item.positionPercent}%` : ""
       }));
     this.setData({ records });
   },

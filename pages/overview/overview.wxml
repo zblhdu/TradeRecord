@@ -6,6 +6,7 @@
         <view class="month-title">{{monthTitle}}</view>
       </picker>
       <text class="muted">{{monthSummary.count}} 次误操作，{{monthSummary.lossText}}</text>
+      <text class="calc-note">按亏损比例 × 影响仓位折算为满仓口径</text>
     </view>
     <view class="month-btn" bindtap="nextMonth">›</view>
   </view>
@@ -34,6 +35,7 @@
       <view>
         <text class="detail-title">{{item.symbol || '未填标的'}}</text>
         <text class="detail-note">{{item.reason || item.action || item.note || '未填写详情'}}</text>
+        <text class="detail-note">{{item.detailText}}</text>
       </view>
       <text class="loss">{{item.lossText}}</text>
     </view>
@@ -41,26 +43,22 @@
 
   <view class="panel section">
     <view class="panel-head">
-      <text class="panel-title">近 1 月误操作</text>
-      <text class="muted">{{summary30.count}} 次 / {{summary30.lossText}}</text>
+      <text class="panel-title">近 3 个月误操作</text>
+      <text class="muted">{{summary90.count}} 次 / {{summary90.lossText}}</text>
     </view>
-    <canvas class="trend" canvas-id="trend30" id="trend30"></canvas>
-  </view>
-
-  <view class="panel section">
-    <view class="panel-head">
-      <text class="panel-title">近半年误操作</text>
-      <text class="muted">{{summary180.count}} 次 / {{summary180.lossText}}</text>
+    <canvas class="trend" canvas-id="trend90" id="trend90"></canvas>
+    <view class="reason-head">
+      <text>失误原因</text>
+      <text class="muted">按损失排序</text>
     </view>
-    <canvas class="trend" canvas-id="trend180" id="trend180"></canvas>
-  </view>
-
-  <view class="panel section">
-    <view class="panel-head">
-      <text class="panel-title">近一年误操作</text>
-      <text class="muted">{{summary365.count}} 次 / {{summary365.lossText}}</text>
+    <view wx:if="{{reasonStats90.length === 0}}" class="empty">还没有可统计的失误原因。</view>
+    <view class="reason-row" wx:for="{{reasonStats90}}" wx:key="reason">
+      <view class="reason-main">
+        <text class="reason-name">{{item.reason}}</text>
+        <text class="muted">{{item.count}} 次</text>
+      </view>
+      <text class="loss">{{item.lossText}}</text>
     </view>
-    <canvas class="trend" canvas-id="trend365" id="trend365"></canvas>
   </view>
 
   <view class="panel section">
@@ -79,5 +77,17 @@
     </view>
     <view class="bucket-label">{{customBucketLabel}}显示</view>
     <canvas class="trend" canvas-id="trendCustom" id="trendCustom"></canvas>
+    <view class="reason-head">
+      <text>失误原因</text>
+      <text class="muted">按损失排序</text>
+    </view>
+    <view wx:if="{{reasonStatsCustom.length === 0}}" class="empty">还没有可统计的失误原因。</view>
+    <view class="reason-row" wx:for="{{reasonStatsCustom}}" wx:key="reason">
+      <view class="reason-main">
+        <text class="reason-name">{{item.reason}}</text>
+        <text class="muted">{{item.count}} 次</text>
+      </view>
+      <text class="loss">{{item.lossText}}</text>
+    </view>
   </view>
 </view>

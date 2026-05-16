@@ -2,7 +2,7 @@
   <view class="record-head">
     <text class="eyebrow">误操作损失</text>
     <view class="title">记一次亏掉的机会</view>
-    <text class="muted">只需要填日期和亏损比例，其它信息可选。</text>
+    <text class="muted">只需要填日期、亏损比例和仓位，其它信息可选。</text>
   </view>
 
   <view class="panel section form">
@@ -21,21 +21,27 @@
       </view>
     </view>
 
+    <view class="field required">
+      <text class="label">影响仓位</text>
+      <view class="percent-input">
+        <input type="digit" value="{{form.positionPercent}}" placeholder="100" bindfocus="focusPosition" bindinput="inputPosition" />
+        <text>%</text>
+      </view>
+    </view>
+
     <view class="field">
       <text class="label">标的<text class="optional">可选</text></text>
       <input value="{{form.symbol}}" placeholder="如 600000、贵州茅台" bindinput="inputSymbol" />
     </view>
 
     <view class="field">
-      <text class="label">操作<text class="optional">可选</text></text>
-      <input value="{{form.action}}" placeholder="如 卖飞、追高、割肉" bindinput="inputAction" />
-    </view>
-
-    <view class="field">
-      <text class="label">原因<text class="optional">可选</text></text>
-      <picker range="{{reasons}}" value="{{reasonIndex}}" bindchange="changeReason">
-        <view class="picker-value">{{form.reason || '选择原因'}}</view>
-      </picker>
+      <text class="label">误操作<text class="optional">可选</text></text>
+      <view class="reason-control">
+        <picker range="{{reasons}}" value="{{reasonIndex}}" bindchange="changeReason">
+          <view class="picker-value">{{reasonLabel}}</view>
+        </picker>
+        <input wx:if="{{showCustomReason}}" class="custom-reason" value="{{form.reason}}" placeholder="填写自定义操作" bindinput="inputReason" />
+      </view>
     </view>
 
     <view class="field textarea-field">

@@ -76,6 +76,25 @@ input,
   width: 220rpx;
 }
 
+.reason-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.reason-control .picker-value {
+  width: 100%;
+}
+
+.custom-reason {
+  width: 100%;
+  margin-top: 8rpx;
+  min-height: 58rpx;
+  padding: 0 18rpx;
+  text-align: right;
+  background: #f7f8f3;
+  border-radius: 8rpx;
+}
+
 .textarea-field {
   min-height: 220rpx;
   align-items: flex-start;

@@ -6,7 +6,7 @@ const TYPE_LABELS = {
   correct: "正确操作"
 };
 
-const MISTAKE_REASONS = ["追涨", "杀跌", "恐慌", "贪心", "犹豫", "无计划", "其他"];
+const MISTAKE_REASONS = ["追涨买入", "恐慌割肉", "卖飞", "频繁交易", "重仓赌单票", "没按计划止损", "没按计划止盈", "犹豫错过", "其他", "自定义"];
 const CORRECT_REASONS = ["按计划", "止损", "止盈", "耐心等待", "仓位控制", "其他"];
 
 function pad(value) {
@@ -30,6 +30,9 @@ function createId() {
 function normalizeRecord(record) {
   const type = record.type === "correct" ? "correct" : "mistake";
   const percent = Number(record.percent);
+  const positionPercent = Number(record.positionPercent);
+  const normalizedPercent = Number.isFinite(percent) ? Math.abs(percent) : 0;
+  const normalizedPosition = Number.isFinite(positionPercent) ? Math.abs(positionPercent) : 100;
   return {
     id: record.id || createId(),
     type,
@@ -37,7 +40,9 @@ function normalizeRecord(record) {
     symbol: `${record.symbol || ""}`.trim(),
     action: `${record.action || ""}`.trim(),
     reason: `${record.reason || ""}`.trim(),
-    percent: Number.isFinite(percent) ? Math.abs(percent) : 0,
+    percent: normalizedPercent,
+    positionPercent: normalizedPosition,
+    lossPercent: Number((normalizedPercent * normalizedPosition / 100).toFixed(2)),
     note: `${record.note || ""}`.trim(),
     createdAt: record.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -131,7 +136,7 @@ function summarize(records, days) {
   source.forEach((item) => {
     if (item.type === "mistake") {
       stat.mistakeCount += 1;
-      stat.lossPercent += item.percent;
+      stat.lossPercent += item.lossPercent;
     } else {
       stat.correctCount += 1;
       stat.gainPercent += item.percent;

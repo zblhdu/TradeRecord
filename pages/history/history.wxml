@@ -18,6 +18,7 @@
     </view>
     <view class="record-line" wx:if="{{item.action}}">操作：{{item.action}}</view>
     <view class="record-line" wx:if="{{item.reason}}">原因：{{item.reason}}</view>
+    <view class="record-line" wx:if="{{item.detailText}}">{{item.detailText}}</view>
     <view class="note" wx:if="{{item.note}}">{{item.note}}</view>
     <button class="delete-btn" data-id="{{item.id}}" bindtap="deleteItem">删除</button>
   </view>

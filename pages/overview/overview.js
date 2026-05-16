@@ -28,13 +28,17 @@ function getMistakes() {
   return store.getRecords().filter((item) => item.type === "mistake");
 }
 
+function getActualLoss(item) {
+  return Number((item.lossPercent || item.percent || 0).toFixed(2));
+}
+
 function groupByDate(records) {
   return records.reduce((map, item) => {
     if (!map[item.date]) {
       map[item.date] = { count: 0, loss: 0, records: [] };
     }
     map[item.date].count += 1;
-    map[item.date].loss = Number((map[item.date].loss + item.percent).toFixed(2));
+    map[item.date].loss = Number((map[item.date].loss + getActualLoss(item)).toFixed(2));
     map[item.date].records.push(item);
     return map;
   }, {});
@@ -44,21 +48,27 @@ function summarize(records, startDate) {
   const source = records.filter((item) => parseDate(item.date) >= startDate);
   return {
     count: source.length,
-    loss: Number(source.reduce((sum, item) => sum + item.percent, 0).toFixed(2))
+    loss: Number(source.reduce((sum, item) => sum + getActualLoss(item), 0).toFixed(2))
   };
 }
 
 function summarizeRange(records, startDate, endDate) {
   const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
   const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59);
-  const source = records.filter((item) => {
+  const source = filterRange(records, start, end);
+  return {
+    count: source.length,
+    loss: Number(source.reduce((sum, item) => sum + getActualLoss(item), 0).toFixed(2))
+  };
+}
+
+function filterRange(records, startDate, endDate) {
+  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59);
+  return records.filter((item) => {
     const date = parseDate(item.date);
     return date >= start && date <= end;
   });
-  return {
-    count: source.length,
-    loss: Number(source.reduce((sum, item) => sum + item.percent, 0).toFixed(2))
-  };
 }
 
 function daysBetween(startDate, endDate) {
@@ -79,6 +89,25 @@ function withLossText(summary) {
   };
 }
 
+function summarizeReasons(records) {
+  const map = {};
+  records.forEach((item) => {
+    const reason = item.reason || "未填写";
+    if (!map[reason]) {
+      map[reason] = { reason, count: 0, loss: 0 };
+    }
+    map[reason].count += 1;
+    map[reason].loss = Number((map[reason].loss + getActualLoss(item)).toFixed(2));
+  });
+  return Object.keys(map)
+    .map((key) => ({
+      ...map[key],
+      lossText: formatLoss(map[key].loss)
+    }))
+    .sort((a, b) => b.loss - a.loss)
+    .slice(0, 8);
+}
+
 Page({
   data: {
     weekdays: WEEKDAYS,
@@ -90,18 +119,18 @@ Page({
     selectedDate: "",
     selectedRecords: [],
     monthSummary: { count: 0, loss: 0, lossText: "0%" },
-    summary30: { count: 0, loss: 0, lossText: "0%" },
-    summary180: { count: 0, loss: 0, lossText: "0%" },
-    summary365: { count: 0, loss: 0, lossText: "0%" },
+    summary90: { count: 0, loss: 0, lossText: "0%" },
     customStart: "",
     customEnd: "",
     customSummary: { count: 0, loss: 0, lossText: "0%" },
-    customBucketLabel: "按天"
+    customBucketLabel: "按天",
+    reasonStats90: [],
+    reasonStatsCustom: []
   },
 
   onLoad() {
     const today = new Date();
-    const start = addDays(today, -89);
+    const start = addDays(today, -364);
     this.setData({
       currentYear: today.getFullYear(),
       currentMonth: today.getMonth(),
@@ -120,14 +149,18 @@ Page({
     const grouped = groupByDate(records);
     const calendarDays = this.buildCalendar(grouped);
     const selectedRecords = ((grouped[this.data.selectedDate] && grouped[this.data.selectedDate].records) || [])
-      .map((item) => ({ ...item, lossText: formatLoss(item.percent) }));
+      .map((item) => ({
+        ...item,
+        lossText: formatLoss(getActualLoss(item)),
+        detailText: `亏损 ${item.percent}% × 仓位 ${item.positionPercent}%`
+    }));
     const now = new Date();
-    const start30 = addDays(new Date(now.getFullYear(), now.getMonth(), now.getDate()), -29);
-    const start180 = addDays(new Date(now.getFullYear(), now.getMonth(), now.getDate()), -182);
-    const start365 = addDays(new Date(now.getFullYear(), now.getMonth(), now.getDate()), -364);
+    const start90 = addDays(new Date(now.getFullYear(), now.getMonth(), now.getDate()), -89);
     const customStart = parseDate(this.data.customStart);
     const customEnd = parseDate(this.data.customEnd);
     const customBucketDays = this.getBucketDays(customStart, customEnd);
+    const records90 = filterRange(records, start90, now);
+    const recordsCustom = filterRange(records, customStart, customEnd);
 
     this.setData({
       calendarDays,
@@ -135,15 +168,13 @@ Page({
       monthTitle: `${this.data.currentYear}年${this.data.currentMonth + 1}月`,
       monthPickerValue: monthKey(this.data.currentYear, this.data.currentMonth),
       monthSummary: withLossText(this.getMonthSummary(records)),
-      summary30: withLossText(summarize(records, start30)),
-      summary180: withLossText(summarize(records, start180)),
-      summary365: withLossText(summarize(records, start365)),
+      summary90: withLossText(summarize(records, start90)),
       customSummary: withLossText(summarizeRange(records, customStart, customEnd)),
-      customBucketLabel: this.getBucketLabel(customBucketDays)
+      customBucketLabel: this.getBucketLabel(customBucketDays),
+      reasonStats90: summarizeReasons(records90),
+      reasonStatsCustom: summarizeReasons(recordsCustom)
     }, () => {
-      this.drawTrendRange("trend30", start30, now, 1, records, "30天");
-      this.drawTrendRange("trend180", start180, now, 7, records, "26周");
-      this.drawTrendRange("trend365", start365, now, 7, records, "52周");
+      this.drawTrendRange("trend90", start90, now, 7, records, "13周");
       this.drawTrendRange("trendCustom", customStart, customEnd, customBucketDays, records, this.data.customBucketLabel);
     });
   },
@@ -177,7 +208,7 @@ Page({
     });
     return {
       count: source.length,
-      loss: Number(source.reduce((sum, item) => sum + item.percent, 0).toFixed(2))
+      loss: Number(source.reduce((sum, item) => sum + getActualLoss(item), 0).toFixed(2))
     };
   },
 
@@ -274,7 +305,7 @@ Page({
             const date = parseDate(item.date);
             return date >= start && date <= bucketEnd;
           })
-          .reduce((sum, item) => sum + item.percent, 0);
+          .reduce((sum, item) => sum + getActualLoss(item), 0);
         buckets.push(Number(loss.toFixed(2)));
         cursor = addDays(start, bucketDays);
       }

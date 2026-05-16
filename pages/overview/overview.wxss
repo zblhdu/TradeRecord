@@ -34,6 +34,14 @@
   text-overflow: ellipsis;
 }
 
+.calc-note {
+  display: block;
+  margin-top: 8rpx;
+  color: #9aa298;
+  font-size: 20rpx;
+  line-height: 1.3;
+}
+
 .month-btn {
   flex: none;
   min-width: 68rpx;
@@ -190,6 +198,44 @@
 .loss {
   color: #b44a3b;
   font-weight: 650;
+}
+
+.reason-head {
+  margin-top: 18rpx;
+  min-height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 26rpx;
+  font-weight: 650;
+}
+
+.reason-row {
+  min-height: 78rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  border-top: 1rpx solid #eef0e9;
+}
+
+.reason-row:first-of-type {
+  border-top: none;
+}
+
+.reason-main {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 14rpx;
+}
+
+.reason-name {
+  max-width: 420rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
 }
 
 .trend {

@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/index/index",
     "pages/overview/overview",
+    "pages/index/index",
     "pages/history/history",
     "pages/backup/backup"
   ],
@@ -19,12 +19,12 @@
     "borderStyle": "white",
     "list": [
       {
-        "pagePath": "pages/index/index",
-        "text": "记录"
-      },
-      {
         "pagePath": "pages/overview/overview",
         "text": "概览"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "新增"
       },
       {
         "pagePath": "pages/history/history",
