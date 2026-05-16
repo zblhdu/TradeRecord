@@ -20,7 +20,8 @@ Page({
       .filter((item) => filter === "all" || item.type === filter)
       .map((item) => ({
         ...item,
-        typeText: store.TYPE_LABELS[item.type]
+        typeText: store.TYPE_LABELS[item.type],
+        percentText: item.type === "mistake" ? `-${item.percent}%` : `${item.percent}%`
       }));
     this.setData({ records });
   },

@@ -1,7 +1,7 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/record/record",
+    "pages/overview/overview",
     "pages/history/history",
     "pages/backup/backup"
   ],
@@ -20,11 +20,11 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "概览"
+        "text": "记录"
       },
       {
-        "pagePath": "pages/record/record",
-        "text": "记录"
+        "pagePath": "pages/overview/overview",
+        "text": "概览"
       },
       {
         "pagePath": "pages/history/history",

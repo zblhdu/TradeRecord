@@ -1,0 +1,83 @@
+<view class="page">
+  <view class="month-head">
+    <view class="month-btn" bindtap="prevMonth">‹</view>
+    <view class="month-center">
+      <picker mode="date" fields="month" value="{{monthPickerValue}}" bindchange="changeMonth">
+        <view class="month-title">{{monthTitle}}</view>
+      </picker>
+      <text class="muted">{{monthSummary.count}} 次误操作，{{monthSummary.lossText}}</text>
+    </view>
+    <view class="month-btn" bindtap="nextMonth">›</view>
+  </view>
+
+  <view class="calendar section">
+    <view class="weekday" wx:for="{{weekdays}}" wx:key="*this">{{item}}</view>
+    <view
+      class="day {{item.inMonth ? '' : 'muted-day'}} {{item.date === selectedDate ? 'selected' : ''}} {{item.count > 0 ? 'has-loss' : ''}}"
+      wx:for="{{calendarDays}}"
+      wx:key="date"
+      data-date="{{item.date}}"
+      bindtap="selectDay"
+    >
+      <text class="day-num">{{item.day}}</text>
+      <text wx:if="{{item.count > 0}}" class="day-loss">{{item.lossText}}</text>
+    </view>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head">
+      <text class="panel-title">{{selectedDate}} 误操作</text>
+      <text class="muted">{{selectedRecords.length}} 笔</text>
+    </view>
+    <view wx:if="{{selectedRecords.length === 0}}" class="empty">这天没有记录误操作。</view>
+    <view class="detail-item" wx:for="{{selectedRecords}}" wx:key="id">
+      <view>
+        <text class="detail-title">{{item.symbol || '未填标的'}}</text>
+        <text class="detail-note">{{item.reason || item.action || item.note || '未填写详情'}}</text>
+      </view>
+      <text class="loss">{{item.lossText}}</text>
+    </view>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head">
+      <text class="panel-title">近 1 月误操作</text>
+      <text class="muted">{{summary30.count}} 次 / {{summary30.lossText}}</text>
+    </view>
+    <canvas class="trend" canvas-id="trend30" id="trend30"></canvas>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head">
+      <text class="panel-title">近半年误操作</text>
+      <text class="muted">{{summary180.count}} 次 / {{summary180.lossText}}</text>
+    </view>
+    <canvas class="trend" canvas-id="trend180" id="trend180"></canvas>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head">
+      <text class="panel-title">近一年误操作</text>
+      <text class="muted">{{summary365.count}} 次 / {{summary365.lossText}}</text>
+    </view>
+    <canvas class="trend" canvas-id="trend365" id="trend365"></canvas>
+  </view>
+
+  <view class="panel section">
+    <view class="panel-head custom-head">
+      <text class="panel-title">自定义范围</text>
+      <text class="muted">{{customSummary.count}} 次 / {{customSummary.lossText}}</text>
+    </view>
+    <view class="range-row">
+      <picker mode="date" value="{{customStart}}" bindchange="changeCustomStart">
+        <view class="range-picker">{{customStart}}</view>
+      </picker>
+      <text class="range-sep">至</text>
+      <picker mode="date" value="{{customEnd}}" bindchange="changeCustomEnd">
+        <view class="range-picker">{{customEnd}}</view>
+      </picker>
+    </view>
+    <view class="bucket-label">{{customBucketLabel}}显示</view>
+    <canvas class="trend" canvas-id="trendCustom" id="trendCustom"></canvas>
+  </view>
+</view>

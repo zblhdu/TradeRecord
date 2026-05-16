@@ -5,7 +5,7 @@
       <view class="title">{{form.type === 'mistake' ? '记一次亏掉的机会' : '记一次做对的操作'}}</view>
       <text class="muted">只需要填日期和比例，其它信息可选。</text>
     </view>
-    <view class="minor-type {{form.type === 'correct' ? 'correct' : ''}}" data-type="{{form.type === 'mistake' ? 'correct' : 'mistake'}}" bindtap="toggleType">
+    <view wx:if="{{false}}" class="minor-type {{form.type === 'correct' ? 'correct' : ''}}" data-type="{{form.type === 'mistake' ? 'correct' : 'mistake'}}" bindtap="toggleType">
       {{form.type === 'mistake' ? '记正确操作' : '改回误操作'}}
     </view>
   </view>

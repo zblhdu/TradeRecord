@@ -1,73 +1,49 @@
 <view class="page">
-  <view class="hero">
-    <view>
-      <text class="eyebrow">本月复盘</text>
-      <view class="hero-title">{{overview.month.netPercent}}%</view>
-      <text class="muted">净结果 = 正确收益 - 失误损失</text>
-    </view>
-    <button class="add-button" bindtap="goRecord">＋</button>
+  <view class="record-head">
+    <text class="eyebrow">误操作损失</text>
+    <view class="title">记一次亏掉的机会</view>
+    <text class="muted">只需要填日期和亏损比例，其它信息可选。</text>
   </view>
 
-  <view class="panel section">
-    <view class="panel-head">
-      <text class="panel-title">本月操作概览</text>
-      <text class="muted">{{overview.month.total}} 笔</text>
+  <view class="panel section form">
+    <view class="field required">
+      <text class="label">日期</text>
+      <picker mode="date" value="{{form.date}}" bindchange="changeDate">
+        <view class="picker-value">{{form.date}}</view>
+      </picker>
     </view>
-    <canvas class="chart" canvas-id="monthChart" id="monthChart"></canvas>
-    <view class="legend">
-      <view class="legend-item"><text class="dot mistake"></text>误操作 {{overview.month.mistakeCount}}</view>
-      <view class="legend-item"><text class="dot correct"></text>正确操作 {{overview.month.correctCount}}</view>
-    </view>
-  </view>
 
-  <view class="metrics section">
-    <view class="metric">
-      <text class="metric-label">近 1 月损失</text>
-      <text class="metric-value loss">{{overview.month.lossPercent}}%</text>
-    </view>
-    <view class="metric">
-      <text class="metric-label">近 1 月收益</text>
-      <text class="metric-value gain">{{overview.month.gainPercent}}%</text>
-    </view>
-    <view class="metric">
-      <text class="metric-label">近半年净值</text>
-      <text class="metric-value">{{overview.halfYear.netPercent}}%</text>
-    </view>
-    <view class="metric">
-      <text class="metric-label">近一年净值</text>
-      <text class="metric-value">{{overview.year.netPercent}}%</text>
-    </view>
-  </view>
-
-  <view class="panel section">
-    <view class="panel-head">
-      <text class="panel-title">周期统计</text>
-    </view>
-    <view class="period-row" wx:for="{{periods}}" wx:key="label">
-      <text>{{item.label}}</text>
-      <view class="period-values">
-        <text class="loss">-{{item.lossPercent}}%</text>
-        <text class="gain">+{{item.gainPercent}}%</text>
-        <text>{{item.netPercent}}%</text>
+    <view class="field required">
+      <text class="label">亏损比例</text>
+      <view class="percent-input">
+        <input type="digit" value="{{form.percent}}" placeholder="0.00" bindinput="inputPercent" />
+        <text>%</text>
       </view>
     </view>
+
+    <view class="field">
+      <text class="label">标的<text class="optional">可选</text></text>
+      <input value="{{form.symbol}}" placeholder="如 600000、贵州茅台" bindinput="inputSymbol" />
+    </view>
+
+    <view class="field">
+      <text class="label">操作<text class="optional">可选</text></text>
+      <input value="{{form.action}}" placeholder="如 卖飞、追高、割肉" bindinput="inputAction" />
+    </view>
+
+    <view class="field">
+      <text class="label">原因<text class="optional">可选</text></text>
+      <picker range="{{reasons}}" value="{{reasonIndex}}" bindchange="changeReason">
+        <view class="picker-value">{{form.reason || '选择原因'}}</view>
+      </picker>
+    </view>
+
+    <view class="field textarea-field">
+      <text class="label">复盘<text class="optional">可选</text></text>
+      <textarea value="{{form.note}}" maxlength="300" placeholder="一句话写清楚：为什么亏，下次怎么躲。" bindinput="inputNote"></textarea>
+    </view>
   </view>
 
-  <view class="panel section">
-    <view class="panel-head">
-      <text class="panel-title">最近记录</text>
-      <text class="link" bindtap="goHistory">全部</text>
-    </view>
-    <view wx:if="{{overview.recentRecords.length === 0}}" class="empty">还没有记录，先记下一笔真实操作。</view>
-    <view class="recent-item" wx:for="{{overview.recentRecords}}" wx:key="id">
-      <view>
-        <text class="recent-title">{{item.symbol || '未填标的'}}</text>
-        <text class="recent-note">{{item.reason || item.action || '无备注'}}</text>
-      </view>
-      <view class="recent-right {{item.type}}">
-        <text>{{item.typeText}}</text>
-        <text>{{item.percent}}%</text>
-      </view>
-    </view>
-  </view>
+  <button class="primary-btn section" bindtap="save">保存损失记录</button>
+  <button class="secondary-btn section" bindtap="reset">清空</button>
 </view>

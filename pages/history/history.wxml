@@ -2,7 +2,6 @@
   <view class="filter">
     <view class="filter-item {{filter === 'all' ? 'active' : ''}}" data-filter="all" bindtap="changeFilter">全部</view>
     <view class="filter-item {{filter === 'mistake' ? 'active' : ''}}" data-filter="mistake" bindtap="changeFilter">误操作</view>
-    <view class="filter-item {{filter === 'correct' ? 'active' : ''}}" data-filter="correct" bindtap="changeFilter">正确</view>
   </view>
 
   <view wx:if="{{records.length === 0}}" class="empty-panel">
@@ -15,7 +14,7 @@
         <text class="symbol">{{item.symbol || '未填标的'}}</text>
         <text class="date">{{item.date}}</text>
       </view>
-      <view class="badge {{item.type}}">{{item.typeText}} {{item.percent}}%</view>
+      <view class="badge {{item.type}}">{{item.typeText}} {{item.percentText}}</view>
     </view>
     <view class="record-line" wx:if="{{item.action}}">操作：{{item.action}}</view>
     <view class="record-line" wx:if="{{item.reason}}">原因：{{item.reason}}</view>
