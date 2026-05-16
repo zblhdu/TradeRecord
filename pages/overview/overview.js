@@ -262,6 +262,27 @@ Page({
     this.setData({ selectedDate: event.currentTarget.dataset.date }, () => this.refresh());
   },
 
+  editRecord(event) {
+    const id = event.currentTarget.dataset.id;
+    wx.navigateTo({ url: `/pages/edit/edit?id=${id}` });
+  },
+
+  deleteRecord(event) {
+    const id = event.currentTarget.dataset.id;
+    wx.showModal({
+      title: "删除记录",
+      content: "删除后无法恢复，确认删除这条误操作记录吗？",
+      confirmColor: "#9b2f2f",
+      success: (res) => {
+        if (res.confirm) {
+          store.deleteRecord(id);
+          this.refresh();
+          wx.showToast({ title: "已删除", icon: "none" });
+        }
+      }
+    });
+  },
+
   prevMonth() {
     const date = new Date(this.data.currentYear, this.data.currentMonth - 1, 1);
     this.setData({

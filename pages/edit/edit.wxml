@@ -1,0 +1,54 @@
+<view class="page" wx:if="{{form}}">
+  <view class="record-head">
+    <text class="eyebrow">编辑误操作</text>
+    <view class="title">调整这次记录</view>
+    <text class="muted">修改后会重新计算实际损失。</text>
+  </view>
+
+  <view class="panel section form">
+    <view class="field required">
+      <text class="label">日期</text>
+      <picker mode="date" value="{{form.date}}" bindchange="changeDate">
+        <view class="picker-value">{{form.date}}</view>
+      </picker>
+    </view>
+
+    <view class="field required">
+      <text class="label">亏损比例</text>
+      <view class="percent-input">
+        <input type="digit" value="{{form.percent}}" placeholder="0.00" bindinput="inputPercent" />
+        <text>%</text>
+      </view>
+    </view>
+
+    <view class="field required">
+      <text class="label">影响仓位</text>
+      <view class="percent-input">
+        <input type="digit" value="{{form.positionPercent}}" placeholder="100" bindfocus="focusPosition" bindinput="inputPosition" />
+        <text>%</text>
+      </view>
+    </view>
+
+    <view class="field">
+      <text class="label">标的<text class="optional">可选</text></text>
+      <input value="{{form.symbol}}" placeholder="如 600000、贵州茅台" bindinput="inputSymbol" />
+    </view>
+
+    <view class="field">
+      <text class="label">误操作<text class="optional">可选</text></text>
+      <view class="reason-control">
+        <picker range="{{reasons}}" value="{{reasonIndex}}" bindchange="changeReason">
+          <view class="picker-value">{{reasonLabel}}</view>
+        </picker>
+        <input wx:if="{{showCustomReason}}" class="custom-reason" value="{{form.reason}}" placeholder="填写自定义操作" bindinput="inputReason" />
+      </view>
+    </view>
+
+    <view class="field textarea-field">
+      <text class="label">复盘<text class="optional">可选</text></text>
+      <textarea value="{{form.note}}" maxlength="300" placeholder="一句话写清楚：为什么亏，下次怎么躲。" bindinput="inputNote"></textarea>
+    </view>
+  </view>
+
+  <button class="primary-btn section" bindtap="save">保存修改</button>
+</view>

@@ -2,6 +2,7 @@
   "pages": [
     "pages/overview/overview",
     "pages/index/index",
+    "pages/edit/edit",
     "pages/history/history",
     "pages/backup/backup"
   ],

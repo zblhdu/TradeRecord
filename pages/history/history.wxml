@@ -1,7 +1,12 @@
 <view class="page">
-  <view class="filter">
-    <view class="filter-item {{filter === 'all' ? 'active' : ''}}" data-filter="all" bindtap="changeFilter">全部</view>
-    <view class="filter-item {{filter === 'mistake' ? 'active' : ''}}" data-filter="mistake" bindtap="changeFilter">误操作</view>
+  <view class="range-filter">
+    <picker mode="date" value="{{startDate}}" bindchange="changeStartDate">
+      <view class="range-picker">{{startDate}}</view>
+    </picker>
+    <text class="range-sep">至</text>
+    <picker mode="date" value="{{endDate}}" bindchange="changeEndDate">
+      <view class="range-picker">{{endDate}}</view>
+    </picker>
   </view>
 
   <view wx:if="{{records.length === 0}}" class="empty-panel">

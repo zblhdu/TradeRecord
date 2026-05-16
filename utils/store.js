@@ -68,6 +68,28 @@ function addRecord(record) {
   return next;
 }
 
+function getRecordById(id) {
+  return getRecords().find((item) => item.id === id) || null;
+}
+
+function updateRecord(id, patch) {
+  const records = getRecords();
+  const next = records.map((item) => {
+    if (item.id !== id) {
+      return item;
+    }
+    return normalizeRecord({
+      ...item,
+      ...patch,
+      id,
+      createdAt: item.createdAt,
+      updatedAt: new Date().toISOString()
+    });
+  });
+  saveRecords(next);
+  return next;
+}
+
 function deleteRecord(id) {
   const next = getRecords().filter((item) => item.id !== id);
   saveRecords(next);
@@ -169,11 +191,13 @@ module.exports = {
   formatDate,
   addRecord,
   deleteRecord,
+  getRecordById,
   getExportPayload,
   getOverview,
   getRecords,
   getRecordsFromPayload,
   mergeRecords,
   replaceRecords,
-  summarize
+  summarize,
+  updateRecord
 };

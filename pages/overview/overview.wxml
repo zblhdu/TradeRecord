@@ -37,6 +37,10 @@
         <text class="detail-note">原因：{{item.reason || item.action || '未填写'}}</text>
         <text class="detail-note">{{item.detailText}}</text>
         <text wx:if="{{item.note}}" class="day-note">复盘：{{item.note}}</text>
+        <view class="detail-actions">
+          <view class="detail-action" data-id="{{item.id}}" bindtap="editRecord">编辑</view>
+          <view class="detail-action danger" data-id="{{item.id}}" bindtap="deleteRecord">删除</view>
+        </view>
       </view>
       <text class="loss">{{item.lossText}}</text>
     </view>

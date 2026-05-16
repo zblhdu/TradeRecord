@@ -207,6 +207,29 @@
   line-height: 1.5;
 }
 
+.detail-actions {
+  margin-top: 14rpx;
+  display: flex;
+  gap: 14rpx;
+}
+
+.detail-action {
+  min-width: 96rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1f3a33;
+  background: #eef3e9;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+}
+
+.detail-action.danger {
+  color: #9b2f2f;
+  background: #fff0ec;
+}
+
 .loss {
   color: #b44a3b;
   font-weight: 650;
