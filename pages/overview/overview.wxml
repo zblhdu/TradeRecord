@@ -34,8 +34,9 @@
     <view class="detail-item" wx:for="{{selectedRecords}}" wx:key="id">
       <view>
         <text class="detail-title">{{item.symbol || '未填标的'}}</text>
-        <text class="detail-note">{{item.reason || item.action || item.note || '未填写详情'}}</text>
+        <text class="detail-note">原因：{{item.reason || item.action || '未填写'}}</text>
         <text class="detail-note">{{item.detailText}}</text>
+        <text wx:if="{{item.note}}" class="day-note">复盘：{{item.note}}</text>
       </view>
       <text class="loss">{{item.lossText}}</text>
     </view>
@@ -46,7 +47,8 @@
       <text class="panel-title">近 3 个月误操作</text>
       <text class="muted">{{summary90.count}} 次 / {{summary90.lossText}}</text>
     </view>
-    <canvas class="trend" canvas-id="trend90" id="trend90"></canvas>
+    <view class="bucket-label">每柱代表 1 周</view>
+    <canvas class="trend" canvas-id="trend90" id="trend90" data-trend="90" bindtap="selectTrendBucket"></canvas>
     <view class="reason-head">
       <text>失误原因</text>
       <text class="muted">按损失排序</text>
@@ -75,8 +77,8 @@
         <view class="range-picker">{{customEnd}}</view>
       </picker>
     </view>
-    <view class="bucket-label">{{customBucketLabel}}显示</view>
-    <canvas class="trend" canvas-id="trendCustom" id="trendCustom"></canvas>
+    <view class="bucket-label">{{customBucketLabel}}</view>
+    <canvas class="trend" canvas-id="trendCustom" id="trendCustom" data-trend="custom" bindtap="selectTrendBucket"></canvas>
     <view class="reason-head">
       <text>失误原因</text>
       <text class="muted">按损失排序</text>
@@ -88,6 +90,28 @@
         <text class="muted">{{item.count}} 次</text>
       </view>
       <text class="loss">{{item.lossText}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{showTrendModal}}" class="modal-mask" bindtap="closeTrendModal">
+    <view class="modal-panel" catchtap="noop">
+      <view class="modal-head">
+        <view>
+          <text class="modal-title">{{selectedTrendBucket.start}} 至 {{selectedTrendBucket.end}}</text>
+          <text class="modal-subtitle">{{selectedTrendBucket.count}} 次误操作，{{selectedTrendBucket.lossText}}</text>
+        </view>
+        <view class="modal-close" bindtap="closeTrendModal">×</view>
+      </view>
+      <view wx:if="{{selectedTrendBucket.records.length === 0}}" class="empty">这个时间段没有误操作。</view>
+      <view class="modal-record" wx:for="{{selectedTrendBucket.records}}" wx:key="id">
+        <view class="modal-record-head">
+          <text class="modal-record-title">{{item.symbol || '未填标的'}}</text>
+          <text class="loss">{{item.lossText}}</text>
+        </view>
+        <text class="detail-note">{{item.date}} · {{item.reason || item.action || '未填写原因'}}</text>
+        <text class="detail-note">{{item.detailText}}</text>
+        <text wx:if="{{item.note}}" class="modal-note">{{item.note}}</text>
+      </view>
     </view>
   </view>
 </view>

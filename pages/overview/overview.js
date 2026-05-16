@@ -10,6 +10,14 @@ function dateKey(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
+function shortDateKey(date) {
+  return `${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function shortMonthKey(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+}
+
 function monthKey(year, month) {
   return `${year}-${pad(month + 1)}`;
 }
@@ -108,6 +116,34 @@ function summarizeReasons(records) {
     .slice(0, 8);
 }
 
+function buildTrendBuckets(startDate, endDate, bucketDays, records) {
+  const buckets = [];
+  let cursor = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const rangeEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59);
+
+  while (cursor <= rangeEnd) {
+    const start = new Date(cursor);
+    const end = addDays(start, bucketDays - 1);
+    const bucketEnd = end > rangeEnd ? rangeEnd : new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59);
+    const bucketRecords = filterRange(records, start, bucketEnd);
+    const loss = Number(bucketRecords.reduce((sum, item) => sum + getActualLoss(item), 0).toFixed(2));
+    buckets.push({
+      start: dateKey(start),
+      end: dateKey(bucketEnd),
+      count: bucketRecords.length,
+      loss,
+      lossText: formatLoss(loss),
+      records: bucketRecords.map((item) => ({
+        ...item,
+        lossText: formatLoss(getActualLoss(item)),
+        detailText: `亏损 ${item.percent}% × 仓位 ${item.positionPercent}%`
+      }))
+    });
+    cursor = addDays(start, bucketDays);
+  }
+  return buckets;
+}
+
 Page({
   data: {
     weekdays: WEEKDAYS,
@@ -125,7 +161,11 @@ Page({
     customSummary: { count: 0, loss: 0, lossText: "0%" },
     customBucketLabel: "按天",
     reasonStats90: [],
-    reasonStatsCustom: []
+    reasonStatsCustom: [],
+    trend90Buckets: [],
+    trendCustomBuckets: [],
+    selectedTrendBucket: null,
+    showTrendModal: false
   },
 
   onLoad() {
@@ -161,6 +201,8 @@ Page({
     const customBucketDays = this.getBucketDays(customStart, customEnd);
     const records90 = filterRange(records, start90, now);
     const recordsCustom = filterRange(records, customStart, customEnd);
+    const trend90Buckets = buildTrendBuckets(start90, now, 7, records);
+    const trendCustomBuckets = buildTrendBuckets(customStart, customEnd, customBucketDays, records);
 
     this.setData({
       calendarDays,
@@ -172,10 +214,14 @@ Page({
       customSummary: withLossText(summarizeRange(records, customStart, customEnd)),
       customBucketLabel: this.getBucketLabel(customBucketDays),
       reasonStats90: summarizeReasons(records90),
-      reasonStatsCustom: summarizeReasons(recordsCustom)
+      reasonStatsCustom: summarizeReasons(recordsCustom),
+      trend90Buckets,
+      trendCustomBuckets,
+      selectedTrendBucket: null,
+      showTrendModal: false
     }, () => {
-      this.drawTrendRange("trend90", start90, now, 7, records, "13周");
-      this.drawTrendRange("trendCustom", customStart, customEnd, customBucketDays, records, this.data.customBucketLabel);
+      this.drawTrendBuckets("trend90", trend90Buckets, this.getAxisLabels(start90, now, 7));
+      this.drawTrendBuckets("trendCustom", trendCustomBuckets, this.getAxisLabels(customStart, customEnd, customBucketDays));
     });
   },
 
@@ -272,12 +318,54 @@ Page({
   },
 
   getBucketLabel(bucketDays) {
-    if (bucketDays === 1) return "按天";
-    if (bucketDays === 7) return "按周";
-    return "按30天";
+    if (bucketDays === 1) return "每柱代表 1 天";
+    if (bucketDays === 7) return "每柱代表 1 周";
+    return "每柱代表 30 天";
   },
 
-  drawTrendRange(canvasId, startDate, endDate, bucketDays, records, label) {
+  getAxisLabels(startDate, endDate, bucketDays) {
+    const middle = addDays(startDate, Math.floor((daysBetween(startDate, endDate) - 1) / 2));
+    const formatter = bucketDays === 1 ? shortDateKey : shortMonthKey;
+    return {
+      start: formatter(startDate),
+      middle: formatter(middle),
+      end: formatter(endDate)
+    };
+  },
+
+  selectTrendBucket(event) {
+    const trend = event.currentTarget.dataset.trend;
+    const buckets = trend === "custom" ? this.data.trendCustomBuckets : this.data.trend90Buckets;
+    if (!buckets.length) return;
+
+    const query = wx.createSelectorQuery();
+    query.select(`#${event.currentTarget.id}`).boundingClientRect();
+    query.exec((res) => {
+      const rect = res && res[0];
+      if (!rect) return;
+      const left = 34;
+      const right = 14;
+      const x = event.detail && typeof event.detail.x === "number" ? event.detail.x : 0;
+      const plotW = rect.width - left - right;
+      const index = Math.floor((x - left) / (plotW / buckets.length));
+      if (index < 0 || index >= buckets.length) return;
+      this.setData({
+        selectedTrendBucket: buckets[index],
+        showTrendModal: true
+      });
+    });
+  },
+
+  closeTrendModal() {
+    this.setData({
+      showTrendModal: false,
+      selectedTrendBucket: null
+    });
+  },
+
+  noop() {},
+
+  drawTrendBuckets(canvasId, buckets, axisLabels) {
     const query = wx.createSelectorQuery();
     query.select(`#${canvasId}`).boundingClientRect();
     query.exec((res) => {
@@ -288,29 +376,13 @@ Page({
       const height = rect.height;
       const left = 34;
       const right = 14;
-      const top = 18;
+      const top = 34;
       const bottom = 28;
       const plotW = width - left - right;
       const plotH = height - top - bottom;
-      const buckets = [];
-      let cursor = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-      const rangeEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59);
+      const values = buckets.map((item) => item.loss);
 
-      while (cursor <= rangeEnd) {
-        const start = new Date(cursor);
-        const end = addDays(start, bucketDays - 1);
-        const bucketEnd = end > rangeEnd ? rangeEnd : new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59);
-        const loss = records
-          .filter((item) => {
-            const date = parseDate(item.date);
-            return date >= start && date <= bucketEnd;
-          })
-          .reduce((sum, item) => sum + getActualLoss(item), 0);
-        buckets.push(Number(loss.toFixed(2)));
-        cursor = addDays(start, bucketDays);
-      }
-
-      const max = Math.max(1, ...buckets);
+      const max = Math.max(1, ...values);
       ctx.clearRect(0, 0, width, height);
       ctx.setStrokeStyle("#dce3d7");
       ctx.setLineWidth(1);
@@ -322,12 +394,21 @@ Page({
 
       ctx.setFillStyle("#c85c4a");
       const gap = plotW / buckets.length;
-      buckets.forEach((value, index) => {
+      const labelEvery = gap >= 28 ? 1 : Math.ceil(28 / gap);
+      values.forEach((value, index) => {
         const barH = value / max * plotH;
         const barW = Math.max(3, gap * 0.56);
         const x = left + index * gap + (gap - barW) / 2;
         const y = top + plotH - barH;
         ctx.fillRect(x, y, barW, Math.max(1, barH));
+        const shouldShowLabel = buckets.length <= 16 || index % labelEvery === 0 || value === max;
+        if (value > 0 && shouldShowLabel) {
+          ctx.setFillStyle("#b44a3b");
+          ctx.setFontSize(9);
+          ctx.setTextAlign("center");
+          ctx.fillText(formatLoss(value), x + barW / 2, Math.max(10, y - 5));
+          ctx.setFillStyle("#c85c4a");
+        }
       });
 
       ctx.setFillStyle("#7c857a");
@@ -335,8 +416,12 @@ Page({
       ctx.setTextAlign("left");
       ctx.fillText(formatLoss(max), 4, top + 5);
       ctx.fillText("0", 16, top + plotH + 3);
+      ctx.setTextAlign("left");
+      ctx.fillText(axisLabels.start, left, height - 6);
       ctx.setTextAlign("center");
-      ctx.fillText(label, left + plotW / 2, height - 6);
+      ctx.fillText(axisLabels.middle, left + plotW / 2, height - 6);
+      ctx.setTextAlign("right");
+      ctx.fillText(axisLabels.end, left + plotW, height - 6);
       ctx.draw();
     });
   }

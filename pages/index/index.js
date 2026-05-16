@@ -19,7 +19,7 @@ Page({
     reasons: store.MISTAKE_REASONS,
     reasonIndex: 0,
     showCustomReason: false,
-    reasonLabel: "选择类型"
+    reasonLabel: "选择原因"
   },
 
   changeDate(event) {
@@ -90,7 +90,7 @@ Page({
       form: defaultForm(),
       reasonIndex: 0,
       showCustomReason: false,
-      reasonLabel: "选择类型"
+      reasonLabel: "选择原因"
     });
   }
 });
