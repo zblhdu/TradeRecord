@@ -76,11 +76,6 @@
   background: #fff0ec;
 }
 
-.badge.correct {
-  color: #26724f;
-  background: #edf6ef;
-}
-
 .record-line {
   margin-top: 18rpx;
 }

@@ -15,7 +15,7 @@ Page({
 
   exportData() {
     const payload = store.getExportPayload();
-    const filePath = `${wx.env.USER_DATA_PATH}/trade-record-${Date.now()}.json`;
+    const filePath = `${wx.env.USER_DATA_PATH}/stock-mistake-review-${Date.now()}.json`;
     wx.getFileSystemManager().writeFile({
       filePath,
       data: JSON.stringify(payload, null, 2),
@@ -23,7 +23,7 @@ Page({
       success: () => {
         wx.shareFileMessage({
           filePath,
-          fileName: "trade-record-backup.json",
+          fileName: "股票失误反省录备份.json",
           fail: () => {
             wx.showModal({
               title: "已导出",

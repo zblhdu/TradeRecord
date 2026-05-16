@@ -1,8 +1,8 @@
 <view class="page">
   <view class="record-head">
-    <text class="eyebrow">误操作损失</text>
-    <view class="title">记一次亏掉的机会</view>
-    <text class="muted">只需要填日期、亏损比例和仓位，其它信息可选。</text>
+    <text class="eyebrow">股票失误反省录</text>
+    <view class="title">记录误操作</view>
+    <text class="muted">记录每一次误操作，让下一次少犯错。</text>
   </view>
 
   <view class="panel section form">

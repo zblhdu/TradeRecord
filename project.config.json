@@ -1,5 +1,5 @@
 {
-  "description": "TradeRecord 微信小程序",
+  "description": "股票失误反省录微信小程序",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -41,7 +41,7 @@
   "compileType": "miniprogram",
   "libVersion": "3.5.7",
   "appid": "wxf579cdcdcd13fbc9",
-  "projectname": "TradeRecord",
+  "projectname": "股票失误反省录",
   "condition": {},
   "simulatorPluginLibVersion": {},
   "editorSetting": {}

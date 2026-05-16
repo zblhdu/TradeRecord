@@ -7,7 +7,7 @@
     "pages/backup/backup"
   ],
   "window": {
-    "navigationBarTitleText": "交易复盘",
+    "navigationBarTitleText": "股票失误反省录",
     "navigationBarBackgroundColor": "#f7f8f3",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f7f8f3"

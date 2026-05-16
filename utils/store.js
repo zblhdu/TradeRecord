@@ -2,12 +2,10 @@ const STORAGE_KEY = "trade_record_items_v1";
 const EXPORT_VERSION = 1;
 
 const TYPE_LABELS = {
-  mistake: "误操作",
-  correct: "正确操作"
+  mistake: "误操作"
 };
 
 const MISTAKE_REASONS = ["追涨买入", "恐慌割肉", "卖飞", "频繁交易", "重仓赌单票", "没按计划止损", "没按计划止盈", "犹豫错过", "其他", "自定义"];
-const CORRECT_REASONS = ["按计划", "止损", "止盈", "耐心等待", "仓位控制", "其他"];
 
 function pad(value) {
   return value < 10 ? `0${value}` : `${value}`;
@@ -18,24 +16,18 @@ function formatDate(date) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-function parseDate(value) {
-  const d = new Date(`${value}T00:00:00`);
-  return Number.isNaN(d.getTime()) ? new Date() : d;
-}
-
 function createId() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
 function normalizeRecord(record) {
-  const type = record.type === "correct" ? "correct" : "mistake";
   const percent = Number(record.percent);
   const positionPercent = Number(record.positionPercent);
   const normalizedPercent = Number.isFinite(percent) ? Math.abs(percent) : 0;
   const normalizedPosition = Number.isFinite(positionPercent) ? Math.abs(positionPercent) : 100;
   return {
     id: record.id || createId(),
-    type,
+    type: "mistake",
     date: record.date || formatDate(new Date()),
     symbol: `${record.symbol || ""}`.trim(),
     action: `${record.action || ""}`.trim(),
@@ -122,7 +114,7 @@ function mergeRecords(records) {
 
 function getExportPayload() {
   return {
-    app: "TradeRecord",
+    app: "股票失误反省录",
     version: EXPORT_VERSION,
     exportedAt: new Date().toISOString(),
     records: getRecords()
@@ -139,65 +131,18 @@ function getRecordsFromPayload(payload) {
   throw new Error("没有找到可导入的记录");
 }
 
-function summarize(records, days) {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  start.setDate(start.getDate() - days + 1);
-
-  const source = records.filter((item) => parseDate(item.date) >= start);
-  const stat = {
-    days,
-    total: source.length,
-    mistakeCount: 0,
-    correctCount: 0,
-    lossPercent: 0,
-    gainPercent: 0,
-    netPercent: 0
-  };
-
-  source.forEach((item) => {
-    if (item.type === "mistake") {
-      stat.mistakeCount += 1;
-      stat.lossPercent += item.lossPercent;
-    } else {
-      stat.correctCount += 1;
-      stat.gainPercent += item.percent;
-    }
-  });
-  stat.lossPercent = Number(stat.lossPercent.toFixed(2));
-  stat.gainPercent = Number(stat.gainPercent.toFixed(2));
-  stat.netPercent = Number((stat.gainPercent - stat.lossPercent).toFixed(2));
-  return stat;
-}
-
-function getOverview(records) {
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthRecords = records.filter((item) => parseDate(item.date) >= monthStart);
-  return {
-    month: summarize(records, Math.max(1, now.getDate())),
-    halfYear: summarize(records, 183),
-    year: summarize(records, 365),
-    monthRecords,
-    recentRecords: records.slice(0, 5)
-  };
-}
-
 module.exports = {
   TYPE_LABELS,
   MISTAKE_REASONS,
-  CORRECT_REASONS,
   STORAGE_KEY,
   formatDate,
   addRecord,
   deleteRecord,
   getRecordById,
   getExportPayload,
-  getOverview,
   getRecords,
   getRecordsFromPayload,
   mergeRecords,
   replaceRecords,
-  summarize,
   updateRecord
 };
