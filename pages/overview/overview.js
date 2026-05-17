@@ -366,9 +366,11 @@ Page({
       if (!rect) return;
       const left = 34;
       const right = 14;
-      const x = event.detail && typeof event.detail.x === "number" ? event.detail.x : 0;
+      const rawX = event.detail && typeof event.detail.x === "number" ? event.detail.x : 0;
+      const x = rawX > rect.width ? rawX - rect.left : rawX;
       const plotW = rect.width - left - right;
-      const index = Math.floor((x - left) / (plotW / buckets.length));
+      const gap = plotW / buckets.length;
+      const index = Math.round((x - left - gap / 2) / gap);
       if (index < 0 || index >= buckets.length) return;
       this.setData({
         selectedTrendBucket: buckets[index],

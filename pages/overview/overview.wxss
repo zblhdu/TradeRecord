@@ -201,7 +201,7 @@
   margin-top: 10rpx;
   padding: 14rpx;
   color: #35443e;
-  background: #f7f8f3;
+  background: rgba(31, 45, 40, 0.36);
   border-radius: 8rpx;
   font-size: 24rpx;
   line-height: 1.5;
@@ -289,7 +289,7 @@
   align-items: flex-end;
   justify-content: center;
   padding: 28rpx;
-  background: rgba(31, 45, 40, 0.36);
+  background: transparent;
 }
 
 .modal-panel {
@@ -298,6 +298,7 @@
   overflow-y: auto;
   padding: 28rpx;
   background: #ffffff;
+  border: 1rpx solid #e6e9de;
   border-radius: 16rpx;
 }
 
