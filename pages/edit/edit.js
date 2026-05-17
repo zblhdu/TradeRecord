@@ -23,7 +23,9 @@ Page({
       return;
     }
 
-    const reasonIndex = isPresetReason(record.reason) ? store.MISTAKE_REASONS.indexOf(record.reason) : store.MISTAKE_REASONS.indexOf("自定义");
+    const reasonIndex = record.reason
+      ? (isPresetReason(record.reason) ? store.MISTAKE_REASONS.indexOf(record.reason) : store.MISTAKE_REASONS.indexOf("自定义"))
+      : 0;
     const showCustomReason = !!record.reason && !isPresetReason(record.reason);
     this.setData({
       id,

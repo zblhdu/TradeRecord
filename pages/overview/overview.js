@@ -366,7 +366,11 @@ Page({
       if (!rect) return;
       const left = 34;
       const right = 14;
-      const rawX = event.detail && typeof event.detail.x === "number" ? event.detail.x : 0;
+      const touch = (event.touches && event.touches[0]) || (event.changedTouches && event.changedTouches[0]) || {};
+      const rawX = event.detail && typeof event.detail.x === "number"
+        ? event.detail.x
+        : (typeof touch.x === "number" ? touch.x : touch.pageX);
+      if (typeof rawX !== "number") return;
       const x = rawX > rect.width ? rawX - rect.left : rawX;
       const plotW = rect.width - left - right;
       const gap = plotW / buckets.length;

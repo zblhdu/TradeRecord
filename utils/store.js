@@ -24,7 +24,8 @@ function normalizeRecord(record) {
   const percent = Number(record.percent);
   const positionPercent = Number(record.positionPercent);
   const normalizedPercent = Number.isFinite(percent) ? Math.abs(percent) : 0;
-  const normalizedPosition = Number.isFinite(positionPercent) ? Math.abs(positionPercent) : 100;
+  const rawPosition = Number.isFinite(positionPercent) ? Math.abs(positionPercent) : 100;
+  const normalizedPosition = Math.min(100, Math.max(0, rawPosition));
   return {
     id: record.id || createId(),
     type: "mistake",
